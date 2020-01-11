@@ -48,11 +48,11 @@ public class Account {
 	//                if (amount <= 4000)
 	//                    return 20;
             case MAXI_SAVINGS:
-                if (amount <= 1000)
-                    return amount * 0.02;
-                if (amount <= 2000)
-                    return 20 + (amount-1000) * 0.05;
-                return 70 + (amount-2000) * 0.1;
+                int days = daysSinceLastWithdrawal();
+                if(days != -1 && days > 10){
+                    return amount * 0.05;
+                }
+                return amount * 0.001;
             default:
                 return amount * 0.001;
         }
@@ -73,4 +73,17 @@ public class Account {
         return accountType;
     }
 
+    public int daysSinceLastWithdrawal(){
+        for (int i = list.size(); i > 0; i--) {
+            Transaction currentTransaction = list.get(i);
+            if(currentTransaction.getAmount() < 0){
+                Date currentDate = DateProvider.getInstance().now();
+                Date transactionDate = currentTransaction.getDate();
+                long diffTime = currentDate.getTime() - transactionDate.getTime();
+                long diffDays = diffTime / (1000 * 60 * 60 * 24);
+                return diffDays;
+            }
+        }
+        return -1;
+    }
 }
