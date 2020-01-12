@@ -2,6 +2,7 @@ package com.abc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 public class Account {
 
@@ -48,14 +49,18 @@ public class Account {
 	//                if (amount <= 4000)
 	//                    return 20;
             case MAXI_SAVINGS:
-                int days = daysSinceLastWithdrawal();
-                if(days != -1 && days > 10){
+                long days = daysSinceLastWithdrawal();
+                if(days == -1 || days > 10){
                     return amount * 0.05;
                 }
                 return amount * 0.001;
             default:
                 return amount * 0.001;
         }
+    }
+
+    public void addTransaction(Transaction t){
+        transactions.add(t);
     }
 
     public double sumTransactions() {
@@ -73,9 +78,9 @@ public class Account {
         return accountType;
     }
 
-    public int daysSinceLastWithdrawal(){
-        for (int i = list.size(); i > 0; i--) {
-            Transaction currentTransaction = list.get(i);
+    public long daysSinceLastWithdrawal(){
+        for (int i = transactions.size()-1; i > 0; i--) {
+            Transaction currentTransaction = transactions.get(i);
             if(currentTransaction.getAmount() < 0){
                 Date currentDate = DateProvider.getInstance().now();
                 Date transactionDate = currentTransaction.getDate();
